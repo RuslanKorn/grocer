@@ -86,6 +86,19 @@ module Grocer
       validate_payload rescue false
     end
 
+    def truncate(field)
+      field_val = send(field)
+      field_size = field_val.bytesize
+      payload_size = encoded_payload.bytesize
+      max_field_size = 256 - (payload_size - field_size)
+      if max_field_size > 0
+        field_val = field_val.truncate(max_field_size)
+        send(field.to_s + "=", field_val)
+      else
+        send(field.to_s + "=", nil)
+      end
+    end
+
     private
 
     def encoded_payload
